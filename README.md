@@ -1,7 +1,7 @@
 ## # PDFX
 
 ## Overview
-PDFX is a simple-to-use native Salesforce product that enhances PDF capabilities within Salesforce. It enables users to perform various PDF-related actions such as merging, compressing, rotating, splitting, and converting documents seamlessly. PDFX integrates with the iLovePDF API to provide a robust document-processing solution for businesses.
+PDFX is a simple-to-use native Salesforce product that enhances PDF capabilities within Salesforce. It enables users to perform various PDF-related actions such as merging, compressing, rotating, splitting, and converting documents seamlessly. 
 
 ## Features
 - **Merge PDFs** – Combine multiple PDF files into a single document effortlessly.
@@ -30,20 +30,12 @@ PDFX is a simple-to-use native Salesforce product that enhances PDF capabilities
    - Merge multiple invoices for a customer into a single document.
 
 ## How It Works
-1. Select the desired PDF action within the PDFX interface in Salesforce.
-2. Upload or choose existing files from Salesforce records.
-3. Apply the necessary modifications (merge, split, compress, rotate, etc.).
-4. Download or attach the processed file directly to Salesforce records.
+1. 
 
 ## Technical Details
 - **Built on Salesforce** – 100% native Lightning-ready solution.
-- **iLovePDF API Integration** – Leverages the power of iLovePDF for advanced document processing.
 - **Secure and Compliant** – Ensures data security and complies with Salesforce security best practices.
 - **Easy Setup** – No complex configurations required, works out-of-the-box with minimal setup.
-
-## Pricing & Availability
-- PDFX will be available as a paid offering on the Salesforce AppExchange.
-- Pricing details will be provided based on business needs and usage.
 
 ## Roadmap
 - **Enhanced AI-driven PDF processing** – Auto-detect and extract text from scanned documents.
