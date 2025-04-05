@@ -1,4 +1,4 @@
-## # PDFX
+##  PDFX
 
 ## Overview
 PDFX is a simple-to-use native Salesforce product that enhances PDF capabilities within Salesforce. It enables users to perform various PDF-related actions such as merging, compressing, rotating, splitting, and converting documents seamlessly. 
