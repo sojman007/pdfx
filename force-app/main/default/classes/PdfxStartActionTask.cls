@@ -1,6 +1,6 @@
-public with sharing class PdfxStartActionTask extends PdfxActionTask {
+public without sharing class PdfxStartActionTask extends PdfxActionTask {
     
-    private string toolName;
+    
 
     public PdfxStartActionTask() {
 
@@ -10,8 +10,14 @@ public with sharing class PdfxStartActionTask extends PdfxActionTask {
         this.toolName = toolName;
     }
 
+    public override boolean passed(){
+        return true;
+    }
+    public override string endPoint(){
+        return '/start';
+    }
 
-    public override PdfActionTaskResult execute(){
+    public override PdfxActionTaskResult execute(){
         // make callout to server.
 
 
