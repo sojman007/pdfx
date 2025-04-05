@@ -1,2 +1,2 @@
-public with sharing class PdfxMergePdfAction extends PdfxAction{
+public without sharing class PdfxMergePdfAction {
 }
