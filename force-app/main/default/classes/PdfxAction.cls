@@ -9,11 +9,11 @@ public without sharing abstract class PdfxAction {
     private PdfxActionTaskResult taskResult;
     
 
-    protected void addTask(PdfActionTask task){
+    protected void addTask(PdfxActionTask task){
         tasksList.add(task);
     }
 
-    public virtual PdfActionTask getNextTask(){
+    public virtual PdfxActionTask getNextTask(){
         return tasksList.get(taskCounter);
     }
     public virtual boolean hasNextTask(){
@@ -27,16 +27,16 @@ public without sharing abstract class PdfxAction {
     public abstract PdfxActionTask extractDataFromPreviousTaskResult(PdfxActionTask current, PdfxActionTaskResult previousResult);
     
     
-    public abstract PdfActionTaskResult getTaskResult();
+    public abstract PdfxActionTaskResult getTaskResult();
 
     public virtual void setTaskResult(PdfxActionTaskResult result){
         taskResult = result; // find out a way to do a true copy instead of referencing from memory
     }
 
     public virtual void execute(){
-        PdfActionTask currentTask = getNextTask();
+        PdfxActionTask currentTask = getNextTask();
         currentTask = extractDataFromPreviousTaskResult(currentTask, getTaskResult());
-        PdfActionTaskResult taskResult = currentTask.execute();
+        PdfxActionTaskResult taskResult = currentTask.execute();
         // the current task needs to somehow  be able to know if there is a result 
         // from a previous task (if any) and, should be able to 
         // extract the data from the result that it needs in different ways.
