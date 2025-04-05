@@ -10,7 +10,7 @@ public without sharing class PdfxAuthProvider {
 
     private static string requestNewToken(){
         Datetime tokenRequestTime = Datetime.now();
-        string endPoint = CREDS_PROVIDER.getBaseUrl() + '/auth';
+        string endPoint = CREDS_PROVIDER.getBaseUrl() + '/v1/auth';
         HttpRequest request = new HttpRequest();
         request.setEndpoint(endpoint);
         request.setMethod('POST');
@@ -22,7 +22,8 @@ public without sharing class PdfxAuthProvider {
         HttpResponse response = new Http().send(request);
         if(response.getStatusCode() == 200){
             Map<String, Object> responseMap = (Map<String, Object>) JSON.deserializeUntyped(response.getBody());
-            token = responseMap.get('token');
+            token = (String)responseMap.get('token');
+            System.debug(token);
             saveTokenToCache(token, tokenRequestTime.addHours(2));
         }else{
             System.debug(response.getStatusCode());
@@ -41,7 +42,7 @@ public without sharing class PdfxAuthProvider {
         tokenInfo.token = token;
         tokenInfo.expiry = expiryTime;
         Cache.OrgPartition partition = Cache.Org.getPartition('local.PdfxAuth');
-        partition.put('pdfxtoken', JSON.serialize(partition,true));
+        partition.put('pdfxtoken', JSON.serialize(tokenInfo,true));
     }
 
     private static PdfxAuthProvider.TokenInfo getLastTokenInfoFromCache(){
@@ -78,5 +79,5 @@ public without sharing class PdfxAuthProvider {
         }
     }
 
-
+    public class TokenRetrievalException extends Exception{}
 }
