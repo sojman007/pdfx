@@ -1,4 +1,4 @@
-public with sharing class PdfxApiCredentialsProvider {
+public without sharing class PdfxApiCredentialsProvider {
     
     private static PdfxApiCredentialsProvider instance;
     private Pdfx_Api_Settings__c apiCreds; 
@@ -18,7 +18,7 @@ public with sharing class PdfxApiCredentialsProvider {
     }
 
     public string getPublicAPiKey(){
-        validate(Api_Key__c);
+        validate('Api_Key__c');
         return apiCreds.Api_Key__c;
     }
 
