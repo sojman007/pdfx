@@ -1,7 +1,7 @@
-public without sharing abstract class PdfxActionTaskResult {
-    
-    
-    public PdfxActionTaskResult() {
+public without sharing class PdfxActionTaskResult {
 
-    }
+    public integer index {get;set;}
+    public string name {get;set;}
+    public Object value {get;set;}
+    
 }
