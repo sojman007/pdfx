@@ -1,6 +1,6 @@
 public without sharing class PdfxUploadActionTask extends PdfxActionTask {
     
-    private List<Blob> fileData;
+    private Blob fileToUpload;
     
     public PdfxUploadActionTask() {
 

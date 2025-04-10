@@ -2,6 +2,10 @@ public without sharing class PdfxAuthProvider {
     
     private static final PdfxApiCredentialsProvider CREDS_PROVIDER = PdfxApiCredentialsProvider.getInstance();
 
+    /**
+     * @description : retrieves a token 
+     * @return  `the token`
+     */
     public static string getToken(){
         PdfxAuthProvider.TokenInfo lastToken = getLastTokenInfoFromCache();
         string  token = (!lastToken.isValid() || tokenIsExpired(lastToken.expiry)) ? requestNewToken() : lastToken.token;
