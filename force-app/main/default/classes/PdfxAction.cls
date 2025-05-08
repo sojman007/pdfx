@@ -1,6 +1,7 @@
 public without sharing abstract class PdfxAction {
-
-
+    public map<string,PdfxActionTask> tasksDictionary = new map<string,PdfxActionTask>();
+    // test reference to tasks dictionary. for example ,make a change in this parent class and then see if the change is reflected in the places where 
+    // it is referenced.
     private List<PdfxActionTask> tasksList = new List<PdfxActionTask>(); // potentially convert this to a task queue that can
     // run async or synchronously
     private integer taskCounter = 0;
@@ -24,7 +25,7 @@ public without sharing abstract class PdfxAction {
             taskCounter += 1;
         }
     }
-    public abstract PdfxActionTask extractDataFromPreviousTaskResult(PdfxActionTask current, PdfxActionTaskResult previousResult);
+   // public abstract PdfxActionTask extractDataFromPreviousTaskResult(PdfxActionTask current, PdfxActionTaskResult previousResult);
     
     
     public abstract PdfxActionTaskResult getTaskResult();
@@ -36,7 +37,8 @@ public without sharing abstract class PdfxAction {
     public virtual void execute(){
         // taskQueue.run()
         PdfxActionTask currentTask = getNextTask();
-        currentTask = extractDataFromPreviousTaskResult(currentTask, getTaskResult());
+        // each task should know what task to get its result from by taskId
+        //currentTask = extractDataFromPreviousTaskResult(currentTask, getTaskResult());
         PdfxActionTaskResult taskResult = currentTask.execute();
         // the current task needs to somehow  be able to know if there is a result 
         // from a previous task (if any) and, should be able to 
