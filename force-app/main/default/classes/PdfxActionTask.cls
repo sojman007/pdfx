@@ -1,5 +1,5 @@
 public without sharing abstract class PdfxActionTask {
-    // base class for action tasks : start , upload , process , download , 
+    // base class for action tasks : start , upload , process , download , query
     protected PdfxApiCredentialsProvider credentialsProvider = PdfxApiCredentialsProvider.getInstance();
     protected PdfxActionTask resultSource;
     protected string toolName;
@@ -8,6 +8,11 @@ public without sharing abstract class PdfxActionTask {
     public abstract boolean passed();
     public abstract string endPoint();
     public abstract void execute();
+    public virtual void extractResults(){
+        System.debug('extracting results');
+        // get result source task, 
+        // extract results and set private variables based on results.
+    }
 
 
     public PdfxActionTaskResult getTaskResultByName(string name){
