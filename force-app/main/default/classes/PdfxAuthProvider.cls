@@ -21,13 +21,12 @@ public without sharing class PdfxAuthProvider {
         request.setHeader('Content-Type', 'application/json');
         string token ='';
         request.setBody(JSON.serialize(new Map<String, Object>{
-            'public_key' =>CREDS_PROVIDER.getPublicAPiKey()}));
+            'public_key' =>CREDS_PROVIDER.getPublicApiKey()}));
 
         HttpResponse response = new Http().send(request);
         if(response.getStatusCode() == 200){
             Map<String, Object> responseMap = (Map<String, Object>) JSON.deserializeUntyped(response.getBody());
             token = (String)responseMap.get('token');
-            System.debug(token);
             saveTokenToCache(token, tokenRequestTime.addHours(2));
         }else{
             System.debug(response.getStatusCode());
