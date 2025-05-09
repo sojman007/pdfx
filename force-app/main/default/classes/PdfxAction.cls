@@ -1,53 +1,82 @@
-public without sharing abstract class PdfxAction {
-    public map<string,PdfxActionTask> tasksDictionary = new map<string,PdfxActionTask>();
-    // test reference to tasks dictionary. for example ,make a change in this parent class and then see if the change is reflected in the places where 
-    // it is referenced.
-    private List<PdfxActionTask> tasksList = new List<PdfxActionTask>(); // potentially convert this to a task queue that can
-    // run async or synchronously
-    private integer taskCounter = 0;
-    
-    
-    private PdfxActionTaskResult taskResult;
-    
+public without sharing abstract class PdfxAction implements System.Queueable {
+    private boolean asyncMode;
+    private boolean killSwitchHasNextTaskOverride;
+    private string qJobId;
 
+    private integer taskCounter = 0;
+    private integer tasksSlotRemainder = 8;
+    private List<PdfxActionTask> tasksList = new List<PdfxActionTask>(); 
+
+    public map<integer,List<PdfxActionTaskResult>> tasksResultsDictionary = new map<integer,List<PdfxActionTaskResult>>();
+    
+    
     protected void addTask(PdfxActionTask task){
-        tasksList.add(task);
+        if(tasksSlotRemainder > 0){
+            integer key = tasksResultsDictionary.size();
+            task.setKey(key);
+            tasksList.add(task);
+            tasksResultsDictionary.put(key, new List<PdfxActionTaskResult>());
+            tasksSlotRemainder -= 1;
+        }
+    }
+
+    public boolean canAddTask(){
+        return tasksSlotRemainder > 0;
     }
 
     public virtual PdfxActionTask getNextTask(){
         return tasksList.get(taskCounter);
     }
-    public virtual boolean hasNextTask(){
-        return tasksList.size() > (taskCounter + 1);
+    private virtual boolean hasNextTask(){
+        return killSwitchHasNextTaskOverride ?? (tasksList.size() > (taskCounter + 1));
     }
     public virtual void setNextTask(){
-        if(hasNextTask()){
-            taskCounter += 1;
+        taskCounter += 1;
+    }
+    
+
+    public void run(){
+        if(asyncMode){
+            System.enqueueJob(this);
+        }else{
+            execute();
         }
     }
-   // public abstract PdfxActionTask extractDataFromPreviousTaskResult(PdfxActionTask current, PdfxActionTaskResult previousResult);
-    
-    
-    public abstract PdfxActionTaskResult getTaskResult();
 
-    public virtual void setTaskResult(PdfxActionTaskResult result){
-        taskResult = result; // find out a way to do a true copy instead of referencing from memory
+    
+    public void execute(QueueableContext cont){
+        qJobId = cont.getJobId();
+        asyncMode = true;
+        execute();
     }
 
-    public virtual void execute(){
-        // taskQueue.run()
+    private void execute(){
         PdfxActionTask currentTask = getNextTask();
-        // each task should know what task to get its result from by taskId
-        //currentTask = extractDataFromPreviousTaskResult(currentTask, getTaskResult());
-        PdfxActionTaskResult taskResult = currentTask.execute();
-        // the current task needs to somehow  be able to know if there is a result 
-        // from a previous task (if any) and, should be able to 
-        // extract the data from the result that it needs in different ways.
-        if(hasNextTask()){
-            setNextTask();
-            this.execute();
+        currentTask.execute();
+        
+        if(currentTask.killOnFail()){
+            killSwitch();
         }
+        
+        if (hasNextTask()) {
+            setNextTask();
+            
+            if (asyncMode) {
+                // Re-enqueue the job for the next task in asynchronous mode
+                System.enqueueJob(this);
+            } else {
+                // Continue execution in synchronous mode
+                execute();
+            }
+        }
+    }
 
+    // remove all remaining tasks, clear variables .
+    private void killSwitch(){
+        tasksList = new List<PdfxActionTask>();
+        tasksResultsDictionary = new Map<Integer,List<PdfxActionTaskResult>>();
+        killSwitchHasNextTaskOverride = false;
+       if(asyncMode) {System.abortJob(qJobId);}
     }
     
 }
