@@ -4,7 +4,7 @@ public without sharing class PdfxApiCredentialsProvider {
     private Pdfx_Api_Settings__c apiCreds; 
 
     public static PdfxApiCredentialsProvider getInstance(){
-        if(instance == null) instance = new PdfxApiCredentialsProvider();
+        if(instance == null) { instance = new PdfxApiCredentialsProvider();}
         return instance;
     }
 
@@ -17,7 +17,7 @@ public without sharing class PdfxApiCredentialsProvider {
         return apiCreds.Base_Url__c;
     }
 
-    public string getPublicAPiKey(){
+    public string getPublicApiKey(){
         validate('Api_Key__c');
         return apiCreds.Api_Key__c;
     }
