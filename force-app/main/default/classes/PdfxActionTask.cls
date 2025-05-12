@@ -5,7 +5,7 @@ public without sharing abstract class PdfxActionTask {
     protected integer key;
     protected boolean passed;
     protected boolean killQueueIfFailed; // reserved for future builds.
-    protected map<integer, List<PdfxActionTaskResult>> tasksResultsDict = new Map<Integer,List<PdfxActionTaskResult>>();
+    protected map<string, PdfxActionTaskResult> tasksResultsDict = new Map<String,PdfxActionTaskResult>();
     
     public virtual boolean passed(){
         return this.passed;
@@ -22,9 +22,7 @@ public without sharing abstract class PdfxActionTask {
     public abstract void execute();
     
 
-    public void setKey(integer key){
-        this.key = key;
-    }
+   
     /**
      * @description : sets a reference to the task action result dictionary. This is CRITICAL because we want to have access to mutations
      * made on this dictionary from other tasks (either sync or async);
@@ -49,16 +47,20 @@ public without sharing abstract class PdfxActionTask {
     }
     
     protected void addResult(string name , Object value){
-        List<PdfxActionTaskResult> resultList = tasksResultsDict.get(this.key); 
-        PdfxActionTaskResult tresult = new PdfxActionTaskResult();
-        tresult.name = name;
-        tresult.value = value;
-        resultList.add(tresult);
-        tasksResultsDict.put(key, resultList);
+        if(!tasksResultsDict.containsKey(name)){
+
+            PdfxActionTaskResult tresult = new PdfxActionTaskResult();
+            tresult.name = name;
+            tresult.value = value;
+            resultList.add(tresult);
+            tasksResultsDict.put(name, tResult);
+        }else{
+            throw new PdfxActionTask.TaskException('Result with name '+name+' already exists in the task result dictionary');
+        }
     }
     public boolean hasResults(){
         return this.taskResultList.size() > 0;
     }
 
-    
+    public class TaskException extends Exception {}
 }
