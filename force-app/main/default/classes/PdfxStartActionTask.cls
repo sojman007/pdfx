@@ -33,13 +33,12 @@ public without sharing class PdfxStartActionTask extends PdfxActionTask {
             addResult('task_id', resp.task);
         }
 
-        return null;
 
     }
 
     public class PdfxCalloutResponse{
         public string server{get;set;}
         public string task {get;set;}
-        public integer remaining_credits {get;set;}
+        //public integer remaining_credits {get;set;}
     }
 }
