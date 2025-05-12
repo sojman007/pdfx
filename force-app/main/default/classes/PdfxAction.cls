@@ -7,16 +7,15 @@ public without sharing abstract class PdfxAction implements System.Queueable {
     private integer tasksSlotRemainder = 8;
     private List<PdfxActionTask> tasksList = new List<PdfxActionTask>(); 
 
-    public map<integer,List<PdfxActionTaskResult>> tasksResultsDictionary = new map<integer,List<PdfxActionTaskResult>>();
+    public map<string, PdfxActionTaskResult> tasksResultsDictionary = new map<String, PdfxActionTaskResult>();
     
     
     protected void addTask(PdfxActionTask task){
         if(tasksSlotRemainder > 0){
-            integer key = tasksResultsDictionary.size();
             task.setKey(key);
             tasksList.add(task);
-            tasksResultsDictionary.put(key, new List<PdfxActionTaskResult>());
             tasksSlotRemainder -= 1;
+            task.setTaskResultsRef(tasksResultsDictionary);
         }
     }
 
