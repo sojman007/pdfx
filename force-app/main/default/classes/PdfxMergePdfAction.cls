@@ -6,9 +6,9 @@ public without sharing class PdfxMergePdfAction extends PdfxAction {
         PdfxStartActionTask start = new PdfxStartActionTask('merge');
         start.setKillSwitchOnFail(true);
         this.addTask(start);
-        for(Blob b : this.filesToMerge){
-            this.addTask(new PdfxUploadActionTask(b));
-        }
+        // for(Blob b : this.filesToMerge){
+        //     this.addTask(new PdfxUploadActionTask(b));
+        // }
         // add process and download task 
     }
 
