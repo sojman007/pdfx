@@ -31,10 +31,11 @@ public without sharing class PdfxStartActionTask extends PdfxActionTask {
             PdfxStartActionTask.PdfxCalloutResponse resp = (PdfxStartActionTask.PdfxCalloutResponse)JSON.deserialize(res.getBody(), PdfxStartActionTask.PdfxCalloutResponse.class);
             addResult('server', resp.server);
             addResult('task_id', resp.task);
+
+            // save server record with url -> trigger
         }
-
-
     }
+
 
     public class PdfxCalloutResponse{
         public string server{get;set;}

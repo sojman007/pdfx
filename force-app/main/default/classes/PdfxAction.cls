@@ -1,4 +1,11 @@
-public without sharing abstract class PdfxAction implements System.Queueable {
+public without sharing abstract class PdfxAction implements System.Queueable , Database.AllowsCallouts {
+    
+    /**
+     * Whenever an action is created,
+     *  generate the action Id. 
+     * set the action Id on the registered action tasks (even in the action orchestrator)
+     * use the action Id as a key in cache in order to facilitate state sharing.
+     */
     private boolean asyncMode;
     private boolean killSwitchHasNextTaskOverride;
     private string qJobId;
@@ -51,7 +58,7 @@ public without sharing abstract class PdfxAction implements System.Queueable {
 
     private void execute(){
         PdfxActionTask currentTask = getNextTask();
-        currentTask.execute();
+        currentTask?.execute();
         
         if(currentTask.killOnFail()){
             killSwitch();
@@ -64,7 +71,7 @@ public without sharing abstract class PdfxAction implements System.Queueable {
                 // Re-enqueue the job for the next task in asynchronous mode
                 System.enqueueJob(this);
             } else {
-                // Continue execution in synchronous mode
+                // Recursively Continue execution in synchronous mode
                 execute();
             }
         }

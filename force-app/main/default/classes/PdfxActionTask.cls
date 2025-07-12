@@ -5,10 +5,17 @@ public without sharing abstract class PdfxActionTask {
     protected integer key;
     protected boolean passed;
     protected boolean killQueueIfFailed; // reserved for future builds.
-    protected map<string, PdfxActionTaskResult> tasksResultsDict = new Map<String,PdfxActionTaskResult>();
+    protected map<string, PdfxActionTaskResult> tasksResultsDict;
+
+    protected System.Finalizer taskFinalizer; // perform any separate tasks
+
     
     public virtual boolean passed(){
         return this.passed;
+    }
+
+    public virtual boolean hasFinalizer(){
+        return this.taskFinalizer != null;
     }
     public virtual void setKillSwitchOnFail(boolean killSwitch){
         this.killQueueIfFailed = killSwitch;
@@ -22,7 +29,7 @@ public without sharing abstract class PdfxActionTask {
     public abstract void execute();
     
 
-   
+    
     /**
      * @description : sets a reference to the task action result dictionary. This is CRITICAL because we want to have access to mutations
      * made on this dictionary from other tasks (either sync or async);

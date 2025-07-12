@@ -31,7 +31,7 @@ public without sharing class PdfxAuthProvider {
         }else{
             System.debug(response.getStatusCode());
             System.debug(response.getBody());
-            throw new TokenRetrievalException('An error occured while trying To authorize into the resource server');
+            throw new TokenRetrievalException('An error occured while trying to authorize into the resource server');
         }
         return token;
     }
