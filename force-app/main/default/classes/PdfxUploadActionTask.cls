@@ -7,8 +7,8 @@ public without sharing class PdfxUploadActionTask extends PdfxActionTask {
     
     public PdfxUploadActionTask(Blob fileToUpload) {
         this.fileToUpload = fileToUpload;
-        taskId = getTaskResultByKey('task_id');
-        serverUrl = getTaskResultByKey('server');
+        taskId = getTaskResultByKey('task_id').value.toString();
+        serverUrl = getTaskResultByKey('server').value.toString();
     }
     public override boolean passed(){
         return true;
@@ -32,7 +32,10 @@ public without sharing class PdfxUploadActionTask extends PdfxActionTask {
                       'Content-Disposition: form-data;'+ 'task="' + taskId + ''  +
                       'Content-Type: application/pdf\r\n\r\n';
         Blob bodyBlob = Blob.valueOf(body);
-        Blob finalBody = bodyBlob + fileToUpload + Blob.valueOf('\r\n--' + boundary + '--\r\n');
+        
+        Blob finalBody = Blob.valueOf( EncodingUtil.base64Encode(bodyBlob) + EncodingUtil.base64Encode(fileToUpload) + EncodingUtil.base64Encode(Blob.valueOf('\r\n--' + boundary + '--\r\n')));
+        
+        
         req.setBodyAsBlob(finalBody);
 
         // Make the HTTP callout
