@@ -5,13 +5,20 @@ public without sharing abstract class PdfxActionTask {
     protected integer key;
     protected boolean passed;
     protected boolean killQueueIfFailed; // reserved for future builds.
-    protected map<string, PdfxActionTaskResult> tasksResultsDict;
+    protected map<String , PdfxActionTaskResult> tasksResultsDict;
 
-    protected System.Finalizer taskFinalizer; // perform any separate tasks
+    protected PdfxFinalizer taskFinalizer; // perform any finalizing tasks for this current action 
 
+    public PdfxFinalizer getFinalizer(){
+        return this.taskFinalizer;
+    }
     
     public virtual boolean passed(){
         return this.passed;
+    }
+
+    public void setKey(integer k){
+        key = k;
     }
 
     public virtual boolean hasFinalizer(){
@@ -34,7 +41,7 @@ public without sharing abstract class PdfxActionTask {
      * @description : sets a reference to the task action result dictionary. This is CRITICAL because we want to have access to mutations
      * made on this dictionary from other tasks (either sync or async);
      */
-    public void setTaskResultsRef(map<integer , List<PdfxActionTaskResult>> res){
+    public void setTaskResultsRef(map<String , PdfxActionTaskResult> res){
         this.tasksResultsDict = res;
     }
 
@@ -43,14 +50,7 @@ public without sharing abstract class PdfxActionTask {
      * the assumption is that the calling code knows the name of the result it needs.
      */
     public PdfxActionTaskResult getTaskResultByKey(string name){
-        PdfxActionTaskResult result;
-        for(PdfxActionTaskResult tresult : taskResultList){
-            if(tresult.name.equalsIgnoreCase(name)){
-                result = tresult;
-            }
-        }
-
-        return result;
+        return tasksResultsDict.get(name);
     }
     
     protected void addResult(string name , Object value){
@@ -59,15 +59,14 @@ public without sharing abstract class PdfxActionTask {
             PdfxActionTaskResult tresult = new PdfxActionTaskResult();
             tresult.name = name;
             tresult.value = value;
-            resultList.add(tresult);
             tasksResultsDict.put(name, tResult);
         }else{
-            throw new PdfxActionTask.TaskException('Result with name '+name+' already exists in the task result dictionary');
+            throw new PdfxActionTask.TaskException('Result with name '+ name + ' already exists in the task result dictionary');
         }
     }
-    public boolean hasResults(){
-        return this.taskResultList.size() > 0;
-    }
+    // public boolean hasResults(){
+    //     return this.taskResultDict.size() > 0;
+    // }
 
     public class TaskException extends Exception {}
 }
