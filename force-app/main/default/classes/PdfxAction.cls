@@ -84,7 +84,7 @@ public without sharing abstract class PdfxAction implements System.Queueable , D
                 System.enqueueJob(this);
             } else {
                 // Recursively Continue execution in synchronous mode
-                // TODO : account for potential limit hits !!!!
+                // TODO : account for potential limit hits and DML Before Callout Errors !!!!
                 execute();
             }
         }else{
@@ -98,7 +98,7 @@ public without sharing abstract class PdfxAction implements System.Queueable , D
     private void killSwitch(){
         System.debug(' calling kill switch');
         tasksList = new List<PdfxActionTask>();
-        tasksResultsDictionary = new map<String , PdfxActionTaskResult>();
+        tasksResultsDictionary = new map<String , PdfxActionTaskResult>(); // replace this with cache based shared state
         killSwitchHasNextTaskOverride = false;
        if(asyncMode) {System.abortJob(qJobId);}
     }
