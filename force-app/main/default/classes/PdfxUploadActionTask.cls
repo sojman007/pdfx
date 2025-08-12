@@ -28,11 +28,8 @@ public without sharing class PdfxUploadActionTask extends PdfxActionTask {
         req.setHeader('Content-Type', 'multipart/form-data; boundary=' + boundary);
 
         // Construct the body
-        string body = '--' + boundary + '\r\n' +
-                      'Content-Disposition: form-data;'+ 'task="' + taskId + ''  +
-                      'Content-Type: application/pdf\r\n\r\n';
+        string body = '--' + boundary + '\r\n' + 'Content-Disposition: form-data;'+ 'task="' + taskId + ''  +'Content-Type: application/pdf\r\n\r\n';
         Blob bodyBlob = Blob.valueOf(body);
-        
         Blob finalBody = Blob.valueOf( EncodingUtil.base64Encode(bodyBlob) + EncodingUtil.base64Encode(fileToUpload) + EncodingUtil.base64Encode(Blob.valueOf('\r\n--' + boundary + '--\r\n')));
         
         
@@ -42,7 +39,9 @@ public without sharing class PdfxUploadActionTask extends PdfxActionTask {
         Http http = new Http();
         try {
             HttpResponse res = http.send(req);
+            System.debug('upload file response ' + res.getStatusCode());
             if (res.getStatusCode() != 200) {
+
                 throw new CalloutException('Failed to upload file. Status: ' + res.getStatus());
             }
         } catch (Exception e) {
