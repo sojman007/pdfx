@@ -1,21 +1,17 @@
-public without sharing class PdfxStartActionFinalizer implements PdfxFinalizer , Database.AllowsCallouts{
+public without sharing class PdfxStartActionFinalizer extends PdfxFinalizerTask implements Database.AllowsCallouts{
     
     
     private static final string TOOLING_API_ENDPOINT = Url.getOrgDomainUrl().toExternalForm() + '/services/data/v64.0/'+ 'tooling/sobjects/RemoteProxy/';
 
     private string serverUrl;
 
-    public void setServerUrl(string serverUrl){
-        this.serverUrl = serverUrl;
+    public override void init(map<string,Object> params){
+        this.serverUrl = (String)params.get('serverUrl');
     }
 
-    public System.Finalizer getAsSystemFinalizer(){
-        return (System.Finalizer)this;
-    }
-
-
-    public void execute(System.FinalizerContext fct){
+    public override void execute(){
         System.debug('Starting Task Finalizer');
+        passed = true;
         string siteName = 'Pdfx'+UUID.randomUUID().toString().remove('-');
         map<string,Object> payload = new map<string,Object>{
             'FullName'=> siteName,
@@ -51,6 +47,8 @@ public without sharing class PdfxStartActionFinalizer implements PdfxFinalizer ,
                 upsert as System newConnection;
             }else{
                 System.debug(' Remote Site not added : ' + res.getBody());
+                passed = false;
+                killQueueIfFailed = true;
             }
             
             

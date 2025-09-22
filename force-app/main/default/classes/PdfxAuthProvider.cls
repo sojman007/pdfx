@@ -8,11 +8,13 @@ public without sharing class PdfxAuthProvider {
      */
     public static string getToken(){
         PdfxAuthProvider.TokenInfo lastToken = getLastTokenInfoFromCache();
+        System.debug('Is Last TOken Valid ' + lastToken.isValid());
         string  token = (!lastToken.isValid() || tokenIsExpired(lastToken.expiry)) ? requestNewToken() : lastToken.token;
         return token;
     }
 
     private static string requestNewToken(){
+        System.debug('Requesting a New Token');
         Datetime tokenRequestTime = Datetime.now();
         string endPoint = CREDS_PROVIDER.getBaseUrl() + '/v1/auth';
         HttpRequest request = new HttpRequest();

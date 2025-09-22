@@ -21,7 +21,8 @@ public without sharing class PdfxStartActionTask extends PdfxActionTask {
     }
 
     public override void execute(){
-        System.debug('EXecuting Start ACtion Task');
+        System.debug('Executing Start Action Task');
+        System.debug(PdfxAuthProvider.getToken());
         // make callout to server.
         HttpRequest req = new HttpRequest();
         req.setEndpoint(urlBase+endPoint());
@@ -36,10 +37,11 @@ public without sharing class PdfxStartActionTask extends PdfxActionTask {
             PdfxStartActionTask.PdfxCalloutResponse resp = (PdfxStartActionTask.PdfxCalloutResponse)JSON.deserialize(res.getBody(), PdfxStartActionTask.PdfxCalloutResponse.class);
             addResult('server', resp.server);
             addResult('task_id', resp.task);
-            this.taskFinalizer.setServerUrl(resp.server);
+            this.taskFinalizer.init(new map<string,Object>{'serverUrl' => resp.server});
             
         }else{
             System.debug(' The Start task failed, ' + res.getStatusCode() + ' /n' + res.getBody());
+            this.killQueueIfFailed = true;
         }
     }
 

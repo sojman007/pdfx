@@ -7,9 +7,13 @@ public without sharing class PdfxUploadActionTask extends PdfxActionTask {
     
     public PdfxUploadActionTask(Blob fileToUpload) {
         this.fileToUpload = fileToUpload;
-        taskId = getTaskResultByKey('task_id').value.toString();
-        serverUrl = getTaskResultByKey('server').value.toString();
     }
+    public PdfxUploadActionTask(Blob fileToUpload, string task, string serverUrl) {
+        this.fileToUpload = fileToUpload;
+        taskId = task;
+        this.serverUrl = serverUrl;
+    }
+    
     public override boolean passed(){
         return true;
     }
@@ -18,31 +22,36 @@ public without sharing class PdfxUploadActionTask extends PdfxActionTask {
     }
 
     public override void execute() {
+        taskId = getTaskResultByKey('task_id').value.toString();
+        serverUrl = getTaskResultByKey('server').value.toString();
+
+        System.debug('Executing Upload Action');
+        string token = PdfxAuthProvider.getToken();
+        System.debug(token);
         // Create a multipart HTTP form request and upload the file to the system
         HttpRequest req = new HttpRequest();
-        req.setEndpoint(serverUrl + endPoint());
+        req.setEndpoint('https://'+serverUrl + endPoint());
         req.setMethod('POST');
-        
-        // Set headers
-        string boundary = '----------------------------' + DateTime.now().getTime();
-        req.setHeader('Content-Type', 'multipart/form-data; boundary=' + boundary);
+        req.setHeader('Authorization', 'Bearer '+token );
+        req.setTimeout(30000);
+        req.setHeader('Content-Type', PdfxHttpMultipartFormBuilder.GetContentType());
 
-        // Construct the body
-        string body = '--' + boundary + '\r\n' + 'Content-Disposition: form-data;'+ 'task="' + taskId + ''  +'Content-Type: application/pdf\r\n\r\n';
-        Blob bodyBlob = Blob.valueOf(body);
-        Blob finalBody = Blob.valueOf( EncodingUtil.base64Encode(bodyBlob) + EncodingUtil.base64Encode(fileToUpload) + EncodingUtil.base64Encode(Blob.valueOf('\r\n--' + boundary + '--\r\n')));
         
-        
-        req.setBodyAsBlob(finalBody);
+        string form64 = '';
+        form64 += PdfxHttpMultipartFormBuilder.WriteBoundary();
+        form64 += PdfxHttpMultipartFormBuilder.WriteBodyParameter('task', this.taskId);
+        form64 += PdfxHttpMultipartFormBuilder.WriteBoundary();
+        form64 += PdfxHttpMultipartFormBuilder.WriteBlobBodyParameter('file', EncodingUtil.base64Encode(this.fileToUpload), this.taskId+'.pdf');
+        Blob formBlob = EncodingUtil.base64Decode(form64);
+        string contentLength = string.valueOf(formBlob.size());
+        req.setBodyAsBlob(formBlob);
 
-        // Make the HTTP callout
         Http http = new Http();
         try {
             HttpResponse res = http.send(req);
             System.debug('upload file response ' + res.getStatusCode());
             if (res.getStatusCode() != 200) {
-
-                throw new CalloutException('Failed to upload file. Status: ' + res.getStatus());
+                throw new CalloutException('Failed to upload file. Status: ' + res.getStatus() + '\n' + res.getBody());
             }
         } catch (Exception e) {
             System.debug('Error during file upload: ' + e.getMessage());

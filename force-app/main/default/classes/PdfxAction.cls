@@ -17,6 +17,16 @@ public without sharing abstract class PdfxAction implements System.Queueable , D
     // replace this with org cache so that data can easily be referenced and removed by action key.
     public map<String , PdfxActionTaskResult> tasksResultsDictionary = new map<String , PdfxActionTaskResult>();
     
+    protected void insertTask(integer indexToInsert,PdfxActionTask taskToInsert){
+        if(tasksSlotRemainder > 0){
+            tasksList.add(indexToInsert,taskToInsert);
+            for(integer i=0;i <tasksList.size(); i++){
+                tasksList[i].setKey(i+1);
+            }
+            tasksSlotRemainder -= 1;
+            taskToInsert.setTaskResultsRef(tasksResultsDictionary);
+        }
+    }
     
     protected void addTask(PdfxActionTask task){
         if(tasksSlotRemainder > 0){
@@ -68,9 +78,9 @@ public without sharing abstract class PdfxAction implements System.Queueable , D
         PdfxActionTask currentTask = getNextTask();
         currentTask?.execute();
         if(currentTask.passed() && currentTask.hasFinalizer()){
-            System.attachFinalizer(currentTask.getFinalizer().getAsSystemFinalizer());
+            this.insertTask(currentTask.getKey(), currentTask.getFinalizer());
         }
-        if(currentTask.killOnFail()){
+        if(!currentTask.passed() && currentTask.killOnFail()){
             killSwitch();
         }
         

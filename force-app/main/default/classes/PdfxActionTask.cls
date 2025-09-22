@@ -7,9 +7,9 @@ public without sharing abstract class PdfxActionTask {
     protected boolean killQueueIfFailed; // reserved for future builds.
     protected map<String , PdfxActionTaskResult> tasksResultsDict;
 
-    protected PdfxFinalizer taskFinalizer; // perform any finalizing tasks for this current action 
+    protected PdfxFinalizerTask taskFinalizer; // perform any finalizing tasks for this current action 
 
-    public PdfxFinalizer getFinalizer(){
+    public PdfxFinalizerTask getFinalizer(){
         return this.taskFinalizer;
     }
     
@@ -19,6 +19,10 @@ public without sharing abstract class PdfxActionTask {
 
     public void setKey(integer k){
         key = k;
+    }
+
+    public integer getKey(){
+        return this.key;
     }
 
     public virtual boolean hasFinalizer(){
@@ -64,9 +68,6 @@ public without sharing abstract class PdfxActionTask {
             throw new PdfxActionTask.TaskException('Result with name '+ name + ' already exists in the task result dictionary');
         }
     }
-    // public boolean hasResults(){
-    //     return this.taskResultDict.size() > 0;
-    // }
-
+    
     public class TaskException extends Exception {}
 }
