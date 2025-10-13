@@ -35,8 +35,8 @@ public without sharing class PdfxStartActionTask extends PdfxActionTask {
             System.debug('task passed ' + res.getBody());
             this.passed = true;
             PdfxStartActionTask.PdfxCalloutResponse resp = (PdfxStartActionTask.PdfxCalloutResponse)JSON.deserialize(res.getBody(), PdfxStartActionTask.PdfxCalloutResponse.class);
-            addResult('server', resp.server);
-            addResult('task_id', resp.task);
+            addResult('server', resp.server, false);
+            addResult('task_id', resp.task, false);
             this.taskFinalizer.init(new map<string,Object>{'serverUrl' => resp.server});
             
         }else{

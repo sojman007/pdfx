@@ -14,9 +14,6 @@ public without sharing class PdfxUploadActionTask extends PdfxActionTask {
         this.serverUrl = serverUrl;
     }
     
-    public override boolean passed(){
-        return true;
-    }
     public override string endPoint(){
         return '/v1/upload';
     }
@@ -50,7 +47,20 @@ public without sharing class PdfxUploadActionTask extends PdfxActionTask {
         try {
             HttpResponse res = http.send(req);
             System.debug('upload file response ' + res.getStatusCode());
-            if (res.getStatusCode() != 200) {
+            if (res.getStatusCode() == 200) {
+                this.passed = true;
+                Map<String,Object> convertedResponse = (Map<String,Object>)JSON.deserializeUntyped(res.getBody());
+                string uploadedFileName = (String)convertedResponse.get('server_filename');
+                if(!hasResultKey('uploaded_filenames')){
+                    addResult('uploaded_filenames', new List<String>(), false);
+                }
+                PdfxActionTaskResult fileNamesResult =  getTaskResultByKey('uploaded_filenames');
+                List<String> existingUploadedFiles = (List<String>)fileNamesResult.value;
+                existingUploadedFiles.add(uploadedFileName);
+                addResult('uploaded_filednames', existingUploadedFiles, true);
+                
+            }else{
+                this.passed = false;
                 throw new CalloutException('Failed to upload file. Status: ' + res.getStatus() + '\n' + res.getBody());
             }
         } catch (Exception e) {

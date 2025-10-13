@@ -69,6 +69,18 @@ public without sharing abstract class PdfxAction implements System.Queueable , D
         qJobId = cont.getJobId();
         asyncMode = true;
         execute();
+        if (hasNextTask()) {
+            System.debug('YES We have a next task');
+            setNextTask();
+            
+            if (asyncMode) {
+                // Re-enqueue the job for the next task in asynchronous mode
+                System.debug(' is async ' + asyncMode);
+                System.enqueueJob(this);
+            } 
+        }else{
+            System.debug('NO WE DO NOT HAVE A NEXT TASK !!!');
+        }
     }
 
     private void execute(){
@@ -83,24 +95,6 @@ public without sharing abstract class PdfxAction implements System.Queueable , D
         if(!currentTask.passed() && currentTask.killOnFail()){
             killSwitch();
         }
-        
-        if (hasNextTask()) {
-            System.debug('YES We have a next task');
-            setNextTask();
-            
-            if (asyncMode) {
-                // Re-enqueue the job for the next task in asynchronous mode
-                System.debug(' is async ' + asyncMode);
-                System.enqueueJob(this);
-            } else {
-                // Recursively Continue execution in synchronous mode
-                // TODO : account for potential limit hits and DML Before Callout Errors !!!!
-                execute();
-            }
-        }else{
-            System.debug('NO WE DO NOT HAVE A NEXT TASK !!!');
-        }
-
         // calculate credit usage from all tasks and store in system. 
     }
 

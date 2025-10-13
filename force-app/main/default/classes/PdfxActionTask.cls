@@ -56,15 +56,20 @@ public without sharing abstract class PdfxActionTask {
     public PdfxActionTaskResult getTaskResultByKey(string name){
         return tasksResultsDict.get(name);
     }
+
+    public Boolean hasResultKey(string key){
+        return tasksResultsDict.containsKey(key);
+    }
     
-    protected void addResult(string name , Object value){
-        if(!tasksResultsDict.containsKey(name)){
+    protected void addResult(string name , Object value, boolean overwriteIfExists){
+        if(!tasksResultsDict.containsKey(name) || (tasksResultsDict.containsKey(name) && overwriteIfExists == true)){
 
             PdfxActionTaskResult tresult = new PdfxActionTaskResult();
             tresult.name = name;
             tresult.value = value;
             tasksResultsDict.put(name, tResult);
         }else{
+
             throw new PdfxActionTask.TaskException('Result with name '+ name + ' already exists in the task result dictionary');
         }
     }
